@@ -1,6 +1,6 @@
 https://learngitbranching.js.org/?locale=ko
 # 제목
-## ㅇ부제목
+## 부제목
 
 
 `print`
