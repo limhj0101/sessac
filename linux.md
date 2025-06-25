@@ -1,5 +1,3 @@
-dasdsad
-ㅁㄴㄴㅇㅁㅇ
 https://learngitbranching.js.org/?locale=ko
 # 제목
 ## ㅇ부제목
@@ -16,4 +14,3 @@ echo "hello"
 echo "hello"
 
 ```
-dddd
