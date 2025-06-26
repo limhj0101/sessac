@@ -8,9 +8,4 @@ https://learngitbranching.js.org/?locale=ko
 ```bash
 #!/bin/bash
 echo "hello"
-echo "hello"
-echo "hello"
-echo "hello"
-echo "hello"
-
 ```
