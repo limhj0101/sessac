@@ -1,4 +1,10 @@
+git연습
+
 https://learngitbranching.js.org/?locale=ko
+
+수업 강사님 드라이브
+
+https://drive.google.com/drive/folders/1ypIAcyVIDbFt-tgSKGHhIDFyrNw4nqyz
 # 제목
 ## 부제목
 
@@ -9,3 +15,108 @@ https://learngitbranching.js.org/?locale=ko
 #!/bin/bash
 echo "hello"
 ```
+
+vagrantfile (1)
+```
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+vm_image = "nobreak-labs/rocky-9"
+vm_subnet = "192.168.56."
+
+Vagrant.configure("2") do |config|
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+
+  config.vm.define "sessac1" do |node|
+    node.vm.box = vm_image
+    node.vm.provider "virtualbox" do |vb|
+      vb.name = "sessac1"
+      vb.cpus = 2
+      vb.memory = 4096
+    end
+
+    node.vm.network "private_network", ip: vm_subnet + "11", nic_type: "virtio"
+    node.vm.hostname = "sessac1"
+  end
+end
+```
+
+vagrantfile(2)
+```
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+#vm_image = "nobreak-labs/rocky-9"
+vm_image = "nobreak-labs/rocky-9"
+vm_subnet = "192.168.56."
+
+install_tools_script = <<-SCRIPT
+# lsd
+LSD_VERSION="1.1.5"
+curl -LO https://github.com/lsd-rs/lsd/releases/download/v${LSD_VERSION}/lsd-v${LSD_VERSION}-x86_64-unknown-linux-gnu.tar.gz
+tar -xzf lsd-v${LSD_VERSION}-x86_64-unknown-linux-gnu.tar.gz
+mv lsd-v${LSD_VERSION}-x86_64-unknown-linux-gnu/lsd /usr/local/bin/
+rm -rf lsd-v${LSD_VERSION}-x86_64-unknown-linux-gnu.tar.gz lsd-v${LSD_VERSION}-x86_64-unknown-linux-gnu
+
+# bat
+BAT_VERSION="0.24.0"
+curl -LO https://github.com/sharkdp/bat/releases/download/v${BAT_VERSION}/bat-v${BAT_VERSION}-x86_64-unknown-linux-gnu.tar.gz
+tar -xzf bat-v${BAT_VERSION}-x86_64-unknown-linux-gnu.tar.gz
+mv bat-v${BAT_VERSION}-x86_64-unknown-linux-gnu/bat /usr/local/bin/
+rm -rf bat-v${BAT_VERSION}-x86_64-unknown-linux-gnu.tar.gz bat-v${BAT_VERSION}-x86_64-unknown-linux-gnu
+
+# Set aliases
+ALIASES="
+alias ls='lsd'
+alias ll='lsd -l'
+alias la='lsd -a'
+alias lla='lsd -la'
+alias cat='bat -pp'
+"
+
+# Add aliases to vagrant
+echo "$ALIASES" >> /home/vagrant/.bashrc
+chown vagrant:vagrant /home/vagrant/.bashrc
+
+# Add aliases to root
+echo "$ALIASES" >> /root/.bashrc
+
+# Add aliases to skel for new users
+echo "$ALIASES" >> /etc/skel/.bashrc
+
+# Apply bashrc
+source /root/.bashrc
+sudo -u vagrant bash -c 'source /home/vagrant/.bashrc'
+SCRIPT
+
+Vagrant.configure("2") do |config|
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+
+  config.vm.define "sessac1" do |node|
+    node.vm.box = vm_image
+    node.vm.provider "virtualbox" do |vb|
+      vb.name = "sessac1"
+      vb.cpus = 2
+      vb.memory = 2048
+    end
+
+    node.vm.network "private_network", ip: vm_subnet + "11", nic_type: "virtio"
+    node.vm.hostname = "sessac1"
+    node.vm.provision "shell", inline: install_tools_script, name: "install_tools"
+  end
+end
+```
+
+
+
+실습 9
+```
+0 2 * * * date >> ~/date1.txt
+
+0 9 * * 1-5 date >>
+
+*/10 * * * *
+
+* */2 * * *
+
+* 1 1,4,7,10 * echo "hello" >
+```
+
