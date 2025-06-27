@@ -105,22 +105,44 @@ Vagrant.configure("2") do |config|
 end
 ```
 
-
-
-실습 9
+# 1장
+## 사용자 생성
 ```
-0 2 * * * date >> ~/date1.txt
+    1  cat /etc/passwd
+    2  cat /etc/shadow
+    3  sudo cat /etc/shadow
+    4  cat /etc/group
+    5  cat /etc/gshadow
+    6  sudo cat /etc/gshadow
+    7  ls -l vagrant
+    8  ls -l
+    9  ls -l /etc
+   10  ls man
+   11  man ls
+   12  alias ll
+   13  useradd user01
+   14  su - useradd user01
+   15  su -
+   16  sudo useradd user01
+   17  tail -1 /etc/passwd
+   18  tail -1 /etc/shadow
+   19  sudo tail -1 /etc/shadow
+   20  passwd user01
+   21  sudo passwd user01
+   22  sudo tail -1 /etc/shadow
+   23  mkdir /home/guest
+   24  sudo mkdir /home/guest
+   25  sudo useradd -D -b /home/guest
+   26  sudo useradd -D
+   27  sudo useradd user02
+   28  sudo tail -1 /etc/passwd
+   29  sudo useradd -u 2000 -g 10 -m -d /home/guest/user03 -s /bin/sh user03
+   30  sudo tail -1 /etc/passwd
+   31  history
+   ```
 
-0 9 * * 1-5 date >>
-
-*/10 * * * *
-
-* */2 * * *
-
-* 1 1,4,7,10 * echo "hello" >
-```
-
-## 5장 파일시스템
+# 5장
+## 파일시스템
 
 ```
     3  sudo fdisk /dev/sd
