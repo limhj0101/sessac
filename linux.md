@@ -120,3 +120,52 @@ end
 * 1 1,4,7,10 * echo "hello" >
 ```
 
+## 5장 파일시스템
+
+```
+    3  sudo fdisk /dev/sd
+    4  sudo fdisk /dev/sdb
+    5  lsblk
+    6  sudo partprobe
+    7  sudo partprobe /dev/sdb
+    8  ls -li /etc/passwd
+    9  lsblk
+   10  sudo fdisk /dev/sdb
+   11  sudo partprobe /dev/sdb
+   12  lsblk
+   13  sudo mkfs.xfs /dev/sdb1
+   14  sudo file -s /dev/sdb1
+   15  lsblk
+   16  sudo mkswap /dev/sdb2
+   17  sudo file -s /dev/sdb2
+   18  sudo file -s /dev/sdb1
+   19  sudo blkid
+   20  ls -l /dev/sdb2
+   21  ls -l /dev
+   22  sudo mkdir /mnt/xfsdata
+   23  sudo mount /dve/sdb1 /mnt/xfsdata
+   24  sudo systemctl daemon-reload
+   25  df -h
+   26  mount
+   27  mount | grep sdb1
+   28  sudo mount /dev/sdb1 /mnt/xfsdata
+   29  df -h
+   30  mount | grep sdb1
+   31  sudo touch a /mnt/xfsdata
+   32  ls -l /dev/sdv1
+   33  ls -l /dev/sdb1
+   34  ll -f /dev/sdb1
+   35  ll /dev/sdb1
+   36  sudo touch /mnt/xfsdata/a
+   37  ls -l /mnt/xfsdata
+   38  sudo vi /etc/fstab
+   39  sudo umount /mnt/xfsdata
+   40  mount | grep sdb
+   41  sudo mount -a
+   42  df -h | grep sdb1
+   43  sudo mount | grep sd
+   44  reboot
+   45  sudo reboot
+   46  ls -l /mnt/xfsdata
+   47  mount | grep sdb
+   ```
