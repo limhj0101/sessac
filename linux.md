@@ -255,6 +255,7 @@ SELECT  10 + 20;
 SELECT 100*1.1 AS '부가세포함';
 SELECT CONCAT('hello', ' world')
 
+
 SELECT NOW();
 SELECT CURDATE();
 SELECT CURTIME();
@@ -421,4 +422,186 @@ FROM user
 GROUP BY addr
 HAVING COUNT(*) >= 2
 ORDER BY COUNT(*) DESC;
+
+
+
+
+
+
+
+
+
+
+-- 연습문제
+
+부산에 거주하는 고객
+나이가 25세 이상인 고객
+강릉에 위치한 숙소들
+가격이 150000원 이하인 숙소
+
+—
+
+SELECT user_nm, addr
+FROM user
+WHERE addr = '부산';
+
+SELECT user_nm, age 
+FROM user
+WHERE age >= 25;
+
+SELECT stay_title, location
+FROM stay
+WHERE location = '강릉';
+
+SELECT stay_title, price
+FROM stay
+WHERE price <= 150000;
+
+
+
+모든 고객의 이름과 이메일 조회
+서울 거주 고객의 이름과 전화번호만 조회
+모든 숙소의 이름과 위치만 조회
+제주에 위치한 숙소의 이름, 가격, 수용인원만  조회
+
+—
+
+SELECT user_nm, email
+FROM user;
+
+SELECT user_nm, phone
+FROM user;
+
+SELECT stay_title, location
+FROM stay;
+
+SELECT stay_title, price, capacity
+FROM stay
+WHERE location = '제주';
+
+
+
+모든 고객의 이름을 ‘고객명’, 나이를 ‘연령’ 으로 조회
+경주에 위치한 숙소의 제목을 ‘숙소명’, 가격을 ‘1박 요금’으로 조회
+부산 거주 고객의 이름을 '이름', 전화번호를 '연락처', 이메일을 '이메일 주소’ '로 조회
+
+—
+
+SELECT user_nm AS 고객명, age AS 연령
+FROM user;
+
+SELECT stay_title AS 숙소명, price AS '1박 요금'
+FROM stay;
+
+SELECT user_nm AS 이름, phone AS 연락처, email AS '이메일 주소'
+FROM user
+WHERE addr ='부산';
+
+
+
+고객들의 나이대를 중복 없이 조회
+숙소들의 수용인원을 중복 없이 조회
+예약 상태 종류를 중복 없이 조회
+고객 거주 지역을 중복 없이 조회하되, 가나다 순으로 정렬
+
+—
+
+SELECT DISTINCT age FROM user;
+-- 오름차순으로 정렬
+SELECT DISTINCT age FROM user ORDER BY age;
+
+SELECT DISTINCT capacity FROM stay;
+-- 오름차순으로 정렬
+SELECT DISTINCT capacity FROM stay ORDER BY capacity;
+
+SELECT DISTINCT resv_status FROM reservations;
+
+SELECT DISTINCT addr FROM user ORDER BY addr ASC;
+
+
+
+250000원에서 10% 할인한 금액 계산
+현재 날짜와 시간을 '지금'이라는 별칭으로 조회
+'여행을', ' ', '떠나요'를 연결해서 '메시지'라는 별칭으로 조회
+오늘부터 크리스마스(12월 25일)까지 며칠 남았는지 계산[도전문제]
+
+—
+
+SELECT 250000 * 0.9;
+
+SELECT NOW() AS '지금';
+
+SELECT CONCAT('여행을',' ','떠나요') AS 메세지;
+
+SELECT DATEDIFF('2025-12-25', '2025-07-03');
+
+
+
+숙소를 수용인원이 많은 순서대로 정렬해서 조회
+고객을 가입일이 최근 순서대로 정렬해서 이름과 가입일만 조회
+제주에 위치한 숙소를 가격이 저렴한 순서대로 정렬해서 조회
+고객을 지역별로 정렬하고, 같은 지역에서는 나이가 많은 순으로 정렬
+
+—
+
+SELECT stay_title, capacity
+FROM stay
+ORDER BY capacity DESC;
+
+SELECT user_nm, join_date
+FROM user
+ORDER BY join_date DESC;
+
+SELECT stay_title, price
+FROM stay
+WHERE location = '제주'
+ORDER BY price ASC;
+
+SELECT user_nm, addr, age
+FROM user
+ORDER BY addr ASC, age ASC;
+
+
+
+나이가 32세 이상인 고객의 이름과 나이 조회
+가격이 160000원 미만인 숙소의 제목과 가격
+2022년도에 가입한 고객을 조회[도전문제](힌트: AND)
+
+—
+
+SELECT user_nm, age
+FROM user
+WHERE age >= 32;
+
+SELECT stay_title, price
+FROM stay
+WHERE price < 160000;
+
+SELECT *
+FROM user
+WHERE YEAR(join_date) = 2022;
+-- LIKE 활용
+SELECT *
+FROM user
+WHERE join_date LIKE '2022%';
+-- 범위로 조회
+SELECT *
+FROM user
+WHERE join_date >= '2022-01-01' AND join_date < '2023-01-01';
+
+
+이메일이 등록되지 않은 고객의 이름과 이메일을 조회
+전화번호가 등록된 30세 이상 고객의 이름, 나이, 전화번호를 조회
+
+SELECT user_nm, email
+FROM user
+WHERE email IS NULL;
+
+SELECT user_nm, age, phone
+FROM user
+WHERE age >= 30 AND phone IS NOT NULL;
+
+
+
 ```
+
