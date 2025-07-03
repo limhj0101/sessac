@@ -192,3 +192,233 @@ end
    46  ls -l /mnt/xfsdata
    47  mount | grep sdb
    ```
+
+# SQL
+```
+USE sample_db;
+
+SELECT * FROM stay;
+
+-- 사용자 ID가 'CHO04'인 고객의 이름과 전화번호
+SELECT user_nm, phone
+FROM user
+WHERE user_id = 'CHO04';
+
+SELECT *
+FROM user
+WHERE addr = '서울';
+
+SELECT * 
+FROM user
+WHERE age = '31';
+
+SELECT *
+FROM user
+WHERE age > '31';
+
+SELECT 'A' = 'a';
+
+SELECT user_nm, phone
+FROM user
+WHERE addr = '부산';
+
+
+SELECT stay_title, price
+FROM stay;
+
+SELECT price, stay_title 
+FROM stay;
+
+SELECT price, price, price
+FROM stay;
+
+SELECT user_nm AS 고객명, phone AS 연락처
+FROM user
+WHERE addr = '서울';
+
+SELECT user_nm 고객명, phone 연락처
+FROM user
+WHERE addr = '서울';
+
+
+SELECT addr FROM user;
+SELECT DISTINCT addr FROM user;
+SELECT type FROM stay;
+SELECT DISTINCT type FROM stay;
+
+
+SELECT DISTINCT addr, age FROM user;
+
+SELECT COUNT(DISTINCT addr) FROM user;
+
+SELECT  10 + 20;
+SELECT 100*1.1 AS '부가세포함';
+SELECT CONCAT('hello', ' world')
+
+SELECT NOW();
+SELECT CURDATE();
+SELECT CURTIME();
+
+
+
+SELECT * FROM user ORDER BY age;
+SELECT * FROM user ORDER BY age DESC;
+SELECT stay_title, price FROM stay ORDER BY price DESC;
+
+-- 지역별로 정렬 후, 같은 지역 내에서는 나이 순
+SELECT user_nm, addr, age
+FROM user
+ORDER BY addr, age;
+
+SELECT user_nm, age
+FROM user
+WHERE addr = '서울'
+ORDER BY age;
+
+
+-- .
+SELECT * FROM user LIMIT 5;
+
+-- 가장 저렴한 숙소
+SELECT stay_title, price
+FROM stay
+ORDER BY price
+LIMIT 5;
+
+SELECT stay_title, price
+FROM stay
+ORDER BY price
+LIMIT 5 OFFSET 2;
+
+
+SELECT user_nm FROM user WHERE addr !='부산';
+SELECT user_nm FROM user WHERE addr <>'부산';
+
+SELECT user_nm, age FROM user WHERE age >= 20;
+
+
+
+-- 28세 이상이면서 부산에 거주하는 고객(AND)
+SELECT user_nm, addr, age
+FROM user
+WHERE age >= 28 AND addr = '부산';
+
+-- 부산 또는 여수에 거주하는 고객(OR)
+SELECT user_nm, addr
+FROM user
+WHERE addr = '부산' OR addr = '여수';
+
+
+SELECT * FROM user WHERE phone = NULL;
+SELECT * FROM user WHERE phone != NULL;
+SELECT NULL = NULL;
+SELECT NULL != NULL;
+SELECT NULL > NULL;
+SELECT 5 * NULL;
+
+SELECT user_nm, phone FROM user WHERE phone IS NULL;
+SELECT user_nm, phone FROM user WHERE phone IS NOT NULL;
+
+-- .
+SELECT stay_title, price
+FROM stay
+WHERE price >= 150000 AND price <= 250000;
+
+SELECT stay_title, price
+FROM stay
+WHERE price BETWEEN 150000 AND 250000;
+
+SELECT user_nm FROM user
+WHERE user_nm BETWEEN '김' AND '최';
+
+SELECT stay_title, price
+FROM stay
+WHERE price NOT BETWEEN 150000 AND 250000;
+
+
+SELECT user_nm FROM user
+WHERE user_nm LIKE '김%';
+
+SELECT user_nm FROM user
+WHERE user_nm LIKE '%영%';
+
+SELECT user_nm FROM user
+WHERE user_nm LIKE '%수';
+
+SELECT user_nm FROM user
+WHERE user_nm LIKE '김__';
+
+SELECT user_nm FROM user
+WHERE user_nm NOT LIKE '김%';
+
+
+-- .
+
+SELECT COUNT(*) FROM user;
+
+SELECT COUNT(*) AS 전체고객수,
+COUNT(phone) AS 전화번호고객수,
+COUNT(email) AS 이메일고객수
+FROM user;
+
+SELECT AVG(age) AS 평균나이
+FROM user;
+
+SELECT AVG(price) AS 평균가격
+FROM stay;
+
+-- . GROUP BY 기본 문법
+SELECT 그룹컬럼, 집계함수(컬럼)
+FROM 테이블명
+GROUP BY 그룹컬럼;
+
+-- 지역별로 고객이 몇명 씩 있는지 조회
+SELECT 
+	addr AS 지역,
+	COUNT(*) AS 고객수
+FROM user
+GROUP BY addr;
+
+-- 지역별로 고객이 몇명 씩 있는지 조회
+SELECT 
+	type AS 숙소타입,
+	COUNT(*) AS 숙소갯수
+FROM stay
+GROUP BY type;
+
+-- 30세 이상 고객들의 지역별 분석 현황
+SELECT 
+	addr AS 자역,
+	COUNT(*) AS '30세 이상 고객수'
+FROM user
+WHERE age >= 30
+GROUP BY addr;
+
+-- 고객 수가 많은 지역 순으로 정렬
+SELECT 
+	addr AS 지역,
+	COUNT(*) 고객수
+FROM user
+GROUP BY addr 
+ORDER BY COUNT(*) DESC;
+
+
+-- WHERE : 지역별 나이가 30세 이상인 고객수
+SELECT addr, COUNT(*)
+FROM user
+WHERE age >= 30
+GROUP BY addr;
+
+-- 고객수가 2명 이상인 지역의 고객수
+SELECT addr, COUNT(*)
+FROM user
+GROUP BY addr
+HAVING COUNT(*) >= 2;
+
+-- 고객이 2명 이상인 지역을 고객수 순으로 정렬
+SELECT addr AS 지역, COUNT(*) AS 고객수
+FROM user
+GROUP BY addr
+HAVING COUNT(*) >= 2
+ORDER BY COUNT(*) DESC;
+```
