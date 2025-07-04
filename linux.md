@@ -601,7 +601,119 @@ SELECT user_nm, age, phone
 FROM user
 WHERE age >= 30 AND phone IS NOT NULL;
 
-
-
 ```
 
+## 7월 4일
+```
+-- 서브쿼리
+SELECT stay_title, price
+FROM stay
+WHERE price > (SELECT AVG(price) FROM stay);
+
+-- 서브쿼리 없이 구하기
+SELECT AVG(price) FROM stay;
+SELECT stay_title, price FROM stay
+WHERE price > 179000;
+
+SELECT user_nm, age
+FROM user
+WHERE age > (SELECT MIN(age) FROM user);
+
+SELECT stay_title, price
+FROM stay
+WHERE stay_id IN (SELECT DISTINCT stay_id FROM reservations);
+
+-- .
+SELECT stay_title, price, location
+FROM (SELECT * FROM stay WHERE price >= 200000) AS 프리미엄
+WHERE location = '부산' OR location = '제주';
+
+SELECT stay_title, price, location
+FROM (SELECT * FROM stay WHERE price >= 200000) AS 프리미엄
+WHERE location IN('부산','제주');
+
+-- 성인(20살) 고객 중에서 특정 지역(서울) 거주자만 조회
+SELECT user_nm, age, addr
+FROM (SELECT * FROM user WHERE age >= 20) AS adult_users
+WHERE addr = '서울';
+
+-- 20만원 이상인 숙소들 중에서 부산이나 제주에 위치한 곳 중에 수용인원이 3명 이상인 숙소의 평균 가격을 조회
+
+SELECT AVG(price)
+FROM stay
+WHERE price >= 200000 AND location IN('부산','제주') AND capacity >= 3;
+
+SELECT AVG(price) AS 평균가격
+FROM (SELECT * FROM stay WHERE price >= 200000) AS 프리미엄
+WHERE location IN('부산','제주') AND capacity >= 3;
+
+-- .
+-- 지역별 평균 가격이 20만원 이상인 지역들 조회
+SELECT location, 평균가격
+FROM (
+SELECT location, AVG(price) AS 평균가격 
+FROM stay
+GROUP BY location
+)
+AS location_stats WHERE 평균가격 >= 200000;
+
+SELECT AVG(price), location AS 평균가격 
+FROM stay
+GROUP BY location;
+
+
+SELECT stay_title, price
+FROM stay
+WHERE EXISTS(
+	SELECT 1
+	FROM reservations
+	WHERE  reservations.stay_id = stay_id
+);
+
+SELECT *
+FROM reservations
+WHERE  reservations.stay_id = stay_id;
+
+
+
+-- join
+
+SHOW TABLES;
+DESC customer;
+SELECT * FROM customer LIMIT 5;
+
+DESC orderitem;
+SELECT * FROM orderitem LIMIT 5;
+
+-- customer.CUST_NO = orderitem.CUST_NO
+
+-- 고객 이름과 주문 정보 함께 보기
+SELECT 
+	c.CUST_name AS 고객명,
+	c.area AS 고객지역,
+	o.order_date AS 주문일자,
+	o.total_amount AS 주문금액
+FROM customer c 
+JOIN orderitem o ON c.CUST_NO = o.CUST_NO;
+
+-- 서울 지역 고객이 주문한 전자제품(category_id 'C001')의 내역을 조회하세요
+-- 고객명, 상품명, 가격, 주문수량을 출력
+
+SELECT 
+	c.CUST_name AS 고객명,
+	p.product_name AS 상품명,
+	p.price AS 가격,
+	o.order_qty AS 주문수량
+FROM customer c JOIN orderitem o ON c.CUST_NO = o.CUST_NO
+JOIN product p ON o.product_id = p.product_id;
+
+
+-- 모든고객과 고객들의 주문 정보를 함께보기(주문하지 않은 고객도 포함)
+SELECT 
+	c.CUST_name AS 고객명,
+	c.area AS 지역,
+	o.order_date AS 주문일자,
+	o.total_amount AS 주문금액
+FROM customer c
+LEFT JOIN orderitem o ON c.CUST_NO = o.CUST_NO;
+```
