@@ -720,3 +720,18 @@ SELECT
 FROM customer c
 LEFT JOIN orderitem o ON c.CUST_NO = o.CUST_NO;
 ```
+
+# DB
+## 7월 7일
+
+3계층 서비스 Web-Was-DB
+
+```
+VM Single Oracle 19c DB 기동 방법 :
+# su - oracle
+$ sqlplus / as sysdba
+sql> startup
+VM Single Oracle 19c DB Listener 기동 방법 :
+# su - oracle
+$ lsnrctl start
+```
