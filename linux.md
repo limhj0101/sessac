@@ -735,3 +735,12 @@ VM Single Oracle 19c DB Listener 기동 방법 :
 # su - oracle
 $ lsnrctl start
 ```
+
+메모리 - 프로세스 - 저장구조
+## 7월 8일
+
+오라클 클라이언트
+base
+C:\oracle\app\client\SBA_USER
+소프트웨어
+C:\oracle\app\client\SBA_USER\product\19.0.0\client_1
