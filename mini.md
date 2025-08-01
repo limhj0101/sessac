@@ -133,4 +133,80 @@ curl -I http://192.168.56.44
 브라우저 접속
 
 
-## 2번
+## 2번 - MYSQL 서버분리
+
+db서버 파일
+```
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+vm_image = "nobreak-labs/rocky-9"
+vm_subnet = "192.168."
+
+Vagrant.configure("2") do |config|
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+
+  config.vm.define "db1" do |node|
+    node.vm.box = vm_image
+    node.vm.provider "virtualbox" do |vb|
+      vb.name = "db1"
+      vb.cpus = 2
+      vb.memory = 2048
+    end
+
+    node.vm.network "private_network", ip: vm_subnet + "57.13", nic_type: "virtio"
+    node.vm.network "private_network", ip: vm_subnet + "56.13", nic_type: "virtio"
+    node.vm.hostname = "db1"
+  end
+
+  config.vm.define "db2" do |node|
+    node.vm.box = vm_image
+    node.vm.provider "virtualbox" do |vb|
+      vb.name = "db2"
+      vb.cpus = 2
+      vb.memory = 2048
+    end
+
+    node.vm.network "private_network", ip: vm_subnet + "57.14", nic_type: "virtio"
+    node.vm.network "private_network", ip: vm_subnet + "56.14", nic_type: "virtio"
+    node.vm.hostname = "db2"
+  end
+end
+```
+
+### 기존 db서버 삭제
+```
+sudo systemctl stop mysqld
+
+sudo yum remove mysql mysql-server
+```
+
+db서버에서 mysql, mysql-server 설치
+```
+sudo yum install -y mysql mysql-server
+
+sudo systemctl start mysqld
+sudo systemctl enable mysqld
+
+sudo mysql
+sql> create database wp;
+sql> create user 'wp-user'@'192.168.57.44' identified by 'P@sswOrd';
+sql> grant all privileges on wp.* to 'wp-user'@'192.168.57.44';
+sql> flush privileges;
+
+exit
+
+sudo firewall-cmd --add-service=mysql --permanent
+sudo firewall-cmd --reload
+```
+### 기존 wep 서버 워드프레스 config.php 수정
+```
+sudo vi /var/www/html/wordpress/wp-config.php
+
+/** Database hostname */
+define( 'DB_HOST', '192.168.57.13' );
+```
+### 검증
+```
+curl -I http://192.168.56.44
+```
+브라우저 접속
