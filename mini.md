@@ -210,3 +210,142 @@ define( 'DB_HOST', '192.168.57.13' );
 curl -I http://192.168.56.44
 ```
 브라우저 접속
+
+## 3번
+### 로드밸런서 서버 vagrantfile
+```
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+vm_image = "nobreak-labs/rocky-9"
+vm_subnet = "192.168."
+
+Vagrant.configure("2") do |config|
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+
+  config.vm.define "lb" do |node|
+    node.vm.box = vm_image
+    node.vm.provider "virtualbox" do |vb|
+      vb.name = "lb"
+      vb.cpus = 2
+      vb.memory = 2048
+    end
+
+    node.vm.network "private_network", ip: vm_subnet + "56.10", nic_type: "virtio"
+    node.vm.hostname = "lb"
+  end
+end
+```
+### 로드밸런서 설치/설정
+```
+sudo yum install -y haproxy
+
+sudo vi /etc/haproxy/haproxy.cfg
+
+# 내용추가
+frontend http_front
+    bind *:80
+    default_backend http_back
+
+backend http_back
+    balance roundrobin
+    server web1 192.168.56.44:80 check
+    server web2 192.168.56.45:80 check
+
+# HAProxy Stats Page 설정
+listen stats
+    bind *:8404
+    stats enable
+    stats uri /stats
+    stats refresh 10s
+    stats realm Haproxy\ Statistics
+    stats auth admin:admin  # 사용자명:비밀번호
+```
+### 포트추가/방화벽
+```
+sudo semanage port -a -t http_port_t -p tcp 8404
+sudo firewall-cmd --permanent --add-port=8404/tcp
+sudo firewall-cmd --reload
+
+firewall-cmd --permanent --add-port=80/tcp
+firewall-cmd --reload
+
+sudo systemctl enable haproxy
+sudo systemctl start haproxy
+```
+### 웹서버2 도구설치
+웹 서버, mysql, php 설치
+```
+sudo yum install -y httpd mysql mysql-server php php-mysqlnd
+```
+wordpress 압축파일 다운로드
+```
+curl -o wordpress.tar.gz https://wordpress.org/latest.tar.gz
+```
+혹은 
+```
+wget https://wordpress.org/latest.tar.gz
+```
+아파치 db연결
+```
+sudo setsebool -P httpd_can_network_connect_db on
+```
+WP 압축해제
+```
+sudo tar -xvf wordpress.tar.gz -C /var/www/html
+```
+WP 설정파일에 db정보 입력
+
+-압축 해제하면 있는 sample.php 파일을 sample 지우고 복사하여 설정
+```
+sudo cp /var/www/html/wordpress/wp-config-sample.php /var/www/html/wordpress/wp-config.php
+
+sudo vi /var/www/html/wordpress/wp-config.php
+// ** Database settings - You can get this info from your web host ** //
+/** The name of the database for WordPress */
+define( 'DB_NAME', 'wp' );
+
+/** Database username */
+define( 'DB_USER', 'wp-user' );
+
+/** Database password */
+define( 'DB_PASSWORD', 'P@ssw0rd' );
+
+/** Database hostname */
+define( 'DB_HOST', '192.168.57.13' );
+
+/** Database charset to use in creating database tables. */
+define( 'DB_CHARSET', 'utf8' );
+
+/** The database collate type. Don't change this if in doubt. */
+define( 'DB_COLLATE', '' );
+```
+가상 호스트 설정
+```
+sudo vi /etc/httpd/conf.d/wordpress.conf
+<VirtualHost *:80>
+        ServerName example.com
+        DocumentRoot    /var/www/html/wordpress
+
+        <Directory      "/var/www/html/wordpress">
+                AllowOverride All
+        </Directory>
+
+</Virtualhost>
+
+sudo systemctl restart httpd
+```
+sebool http와 db연결 설정
+```
+sudo setsebool -P httpd_can_network_connect_db on
+```
+### MySQL 안에 web2 유저 설정(DB서버 진행)
+
+```
+sudo mysql
+
+sql> CREATE USER 'wp-user'@'192.168.57.45' IDENTIFIED BY 'P@ssw0rd';
+
+sql> GRANT ALL PRIVILEGES ON wp.* TO 'wp-user'@'192.168.57.45';
+
+exit
+```
